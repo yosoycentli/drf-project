@@ -9,7 +9,7 @@ class WatchListSerializer(serializers.ModelSerializer):
         # Uncomment only one of these lines of code
         fields = "__all__" # Show all the fields
 
-class StreamPlatformSerializer(serializers.ModelSerializer):
+class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
     watchlist = WatchListSerializer(many=True, read_only=True)
 
     class Meta:
