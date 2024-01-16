@@ -10,7 +10,14 @@ class WatchListSerializer(serializers.ModelSerializer):
         fields = "__all__" # Show all the fields
 
 class StreamPlatformSerializer(serializers.ModelSerializer):
-    watchlist = WatchListSerializer(many=True, read_only=True)
+    # watchlist = WatchListSerializer(many=True, read_only=True)
+    # watchlist = serializers.StringRelatedField(many=True) # Show only the titles of the WatchList model
+    # watchlist = serializers.PrimaryKeyRelatedField(many=True, read_only=True) # Show only the primary keys of the WatchList model
+    watchlist = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='watchlist-detail'
+    )
 
     class Meta:
         model = StreamPlatform
