@@ -16,6 +16,19 @@ from watchlist_app.api.serializers import (WatchListSerializer, StreamPlatformSe
                                            ReviewSerializer, StreamPlatformSerializerNoHyperlinked)
 from watchlist_app.api.throttling import ReviewCreateThrottle, ReviewListThrottle
 
+class UserReview(generics.ListAPIView):
+    # queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    # permission_classes = [IsAuthenticated]
+    # throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(review_user__username=username)
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        return Review.objects.filter(review_user__username=username)
 
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
@@ -41,6 +54,7 @@ class ReviewCreate(generics.CreateAPIView):
             watchlist.avg_rating = serializer.validated_data['rating']
         else:
             watchlist.avg_rating = (watchlist.avg_rating + serializer.validated_data['rating'])/watchlist.number_rating
+            # This average is wrong, it's taking the current avg and adding the new one, that only works for 2 reviews
         
         watchlist.save()
 
@@ -48,7 +62,7 @@ class ReviewCreate(generics.CreateAPIView):
 
 
 class ReviewList(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
+    # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewListThrottle, AnonRateThrottle]
