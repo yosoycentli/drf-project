@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 from watchlist_app.api.permissions import  IsAdminOrReadOnly, IsReviewUserOrReadOnly
 from watchlist_app.models import WatchList, StreamPlatform, Review
@@ -53,7 +55,7 @@ class ReviewCreate(generics.CreateAPIView):
         if watchlist.number_rating == 0:
             watchlist.avg_rating = serializer.validated_data['rating']
         else:
-            watchlist.avg_rating = (watchlist.avg_rating + serializer.validated_data['rating'])/watchlist.number_rating
+            watchlist.avg_rating = ((watchlist.avg_rating * (watchlist.number_rating - 1)) + serializer.validated_data['rating'])/watchlist.number_rating
             # This average is wrong, it's taking the current avg and adding the new one, that only works for 2 reviews
         
         watchlist.save()
@@ -66,6 +68,8 @@ class ReviewList(generics.ListCreateAPIView):
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username', 'active']
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -171,6 +175,15 @@ class StreamPlatformDetailAV(APIView):
         platform = StreamPlatform.objects.get(pk=pk)
         platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class WatchList(generics.ListAPIView): #Create this class for test purpose only
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    # filter_backends = [DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter]
+    # filterset_fields = ['title', 'platform__name']
+    search_fields = ['title', 'platform']
 
 
 class WatchListAV(APIView):
