@@ -10,7 +10,6 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
 
 from watchlist_app.api.permissions import  IsAdminOrReadOnly, IsReviewUserOrReadOnly
 from watchlist_app.models import WatchList, StreamPlatform, Review
@@ -180,10 +179,8 @@ class StreamPlatformDetailAV(APIView):
 class WatchList(generics.ListAPIView): #Create this class for test purpose only
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
-    # filter_backends = [DjangoFilterBackend]
-    filter_backends = [filters.SearchFilter]
-    # filterset_fields = ['title', 'platform__name']
-    search_fields = ['title', 'platform']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title', 'platform__name']
 
 
 class WatchListAV(APIView):
