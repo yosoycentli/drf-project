@@ -56,8 +56,7 @@ class ReviewCreate(generics.CreateAPIView):
             watchlist.avg_rating = serializer.validated_data['rating']
         else:
             watchlist.avg_rating = ((watchlist.avg_rating * (watchlist.number_rating - 1)) + serializer.validated_data['rating'])/watchlist.number_rating
-            # This average is wrong, it's taking the current avg and adding the new one, that only works for 2 reviews
-        
+                    
         watchlist.save()
 
         serializer.save(watchlist=watchlist, review_user=review_user)
@@ -177,7 +176,7 @@ class StreamPlatformDetailAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class WatchList(generics.ListAPIView): #Create this class for test purpose only
+class WatchListGV(generics.ListAPIView): #Create this class for test purpose only
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
     # filter_backends = [DjangoFilterBackend]
