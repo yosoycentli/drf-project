@@ -181,9 +181,11 @@ class WatchList(generics.ListAPIView): #Create this class for test purpose only
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
     # filter_backends = [DjangoFilterBackend]
-    filter_backends = [filters.SearchFilter]
+    # filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.OrderingFilter]
     # filterset_fields = ['title', 'platform__name']
-    search_fields = ['title', 'platform__name']
+    # search_fields = ['title', 'platform__name']
+    ordering_fields = ['avg_rating']
 
 
 class WatchListAV(APIView):
